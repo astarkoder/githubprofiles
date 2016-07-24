@@ -28,7 +28,6 @@ var App = React.createClass({
       cache: false,
 
       success: function(userData) {
-	console.log('userData:', userData);
         this.setState({userData})
       }.bind(this),
 
@@ -56,7 +55,6 @@ var App = React.createClass({
       cache: false,
 
       success: function(userRepos) {
-	console.log('userRepos:', userRepos);
         this.setState({userRepos})
       }.bind(this),
 
@@ -69,16 +67,64 @@ var App = React.createClass({
     });
   },
 
+  getRepoData(ctx) {
+
+    return function(repos) {
+      var promises = [];
+      var username = ctx.state.username;
+      var clientId = ctx.props.clientId;
+      var clientSecret = ctx.props.clientSecret;
+
+      repos.forEach(repo => {
+	promises.push(
+	  $.ajax({
+	    url: 'https://api.github.com/repos/' + username + '/' + repo.name + '?client_id=' + clientId + '&client_secret=' + clientSecret,
+            dataType: 'json',
+            cache: false
+	  })
+	)
+      });
+
+      $.when.apply($, promises).done((...repoData) => {
+	repoData = repoData.map(result => {
+	  let repo = result[0];
+
+          // bubble chart formatting
+          return { 
+            x: repo.stargazers_count,
+            y: repo.subscribers_count,
+            z: repo.watchers_count,
+            name: repo.name
+          }          
+          
+        }); 
+        
+        ctx.setState({repoData});
+
+      });
+    }
+  },
+
+  errorFunc(err) {
+    console.log('Error:', err);
+  },
+
   componentDidMount() {
+
+    let getRepoData = this.getRepoData(this);
+
     this.getUserData();  
-    this.getUserRepos();
+    this.getUserRepos().then(getRepoData, this.errorFunc);
+
   },
 
   handleFormSubmit(username) {
     
+    let getRepoData = this.getRepoData(this);
+
     this.setState({username}, function() {
       this.getUserData();
-      this.getUserRepos();
+      this.getUserRepos().then(getRepoData, this.errorFunc);
     });
 
   },

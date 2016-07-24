@@ -1,5 +1,7 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
+var RepoList = require('./repo-list.jsx');
+var Chart = require('./chart.jsx');
 
 var Profile = React.createClass({
 
@@ -51,10 +53,8 @@ var Profile = React.createClass({
           </div>
           <hr/>
           <h3>User Repositories</h3>
-	  {/*
           <RepoList userRepos={this.props.userRepos} />             
-          <Chart repoData={this.props.repoData} />
-	  */}
+          <Chart repoData={this.props.repoData} /> 
         </div>
       </div>
     )
