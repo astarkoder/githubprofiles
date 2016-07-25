@@ -73,6 +73,7 @@ var BubbleChart = React.createClass({
     },
 
     componentWillReceiveProps(props) {        
+      $('.highcharts-button').click(); // reset zoom for new data
       this.chart.highcharts().series[0].setData(props.repoData);
     },
 
