@@ -87,8 +87,9 @@ var App = React.createClass({
 
       $.when.apply($, promises).done((...repoData) => {
 	repoData = repoData.map(result => {
-	  let repo = result[0];
 
+	  var repo = Array.isArray(result) ? result[0] : result;
+	  
           // bubble chart formatting
           return { 
             x: repo.stargazers_count,
